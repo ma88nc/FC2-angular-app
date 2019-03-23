@@ -1,0 +1,22 @@
+<p>
+  test-question works!
+</p>
+
+<ul>
+  <li *ngFor="let question of filteredQuestions">
+   <div> #{{pager.index+1}}) Title: {{question.titleDescription}}</div>
+   <div>Question ID: {{question.questionId}}</div>   
+   <div>Text: {{question.questionText}}</div>
+   <div *ngIf="question.hasImage">
+      <img src="{{baseImageUrl}}{{question.imagePath}}" width="250" >
+   </div>
+   <div>User Answer:      
+      <input type='text' [(ngModel)]="theUserAnswer" />
+  </div>
+   <div></div>
+  </li>
+  <div class="text-sm-center">
+      <button class="btn btn-primary" *ngIf="pager.index < pager.count" (click)="goTo(pager.index + 1);">Submit</button>
+      <button class="btn btn-default" (click)="goTo(pager.count - 1);">Quit</button>
+    </div>
+</ul>

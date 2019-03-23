@@ -1,0 +1,11 @@
+<p>
+  welcome works!
+</p>
+
+<div class="col-md-6 text-sm-right">
+  Select Quiz:
+  <select [(ngModel)]="description" (change)="loadDomain(description)">
+      <option *ngFor="let domain of domains" [value]="domain.domainId">{{domain.description}}</option>
+    </select>
+</div>
+<p>{{infoMessage}}</p>

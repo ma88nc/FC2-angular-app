@@ -1,0 +1,27 @@
+<p>
+  test-summary works!
+</p>
+
+<ul>
+  <li *ngFor="let question of test.Questions; let i=index">
+   <div> #{{question.OrderInTest}}) Title: {{question.titleDescription}}</div>  
+   <div>Text: {{question.questionText}}</div>
+   <div>Correct Answer: {{question.answer}} &nbsp;&nbsp;User Answer: {{question.UserAnswer}}</div>
+   <div>
+      <input type="radio" name="{{i}}" [(ngModel)]="question.IsCorrect" [value]="true" (click)="getValue(1, question.OrderInTest)" >Correct
+      <input type="radio" name="{{i}}" [(ngModel)]="question.IsCorrect" [value]="false" (click)="getValue(-1, question.OrderInTest)">Incorrect
+   <!--    <input type="radio" name="{{i}}" [(ngModel)]="question.IsCorrect" [value]="false" (click)="getValue(0, question.OrderInTest)">Unanswered -->
+  <!--   <input type="radio" name="{{i}}" [(ngModel)]="question.IsCorrect" [value]="true" (click)="getValue(1, question.OrderInTest)" 
+          [checked]="(selectedoption != null) && (question.OrderInTest == selectedoption.OrderInTest) && (question.IsCorrect == true)" >Correct
+    <input type="radio" name="{{i}}" [(ngModel)]="question.IsCorrect" [value]="false" (click)="getValue(-1, question.OrderInTest)" 
+          [checked]="(selectedoption != null) && (question.OrderInTest == selectedoption.OrderInTest) && (question.IsCorrect == false)">Incorrect -->
+ <!--    <input type="radio" name="radiogroup" [(ngModel)]="question.IsCorrect" value="Unanswered" (click)="getValue(0, question.OrderInTest)" 
+          [checked]="(selectedoption != null) && (question.OrderInTest == selectedoption.OrderInTest) && (question.IsCorrect == null)">Unanswered -->
+   </div>
+   <hr>
+  </li>
+</ul>
+<div># Correct: {{numberCorrect}}</div>
+<div># Incorrect: {{numberIncorrect}}</div>
+<div># Unmarked: {{numberUnmarked}}</div>
+<div>% Correct: {{numberCorrect*100/test.Questions.length}}</div>
