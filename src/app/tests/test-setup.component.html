@@ -7,10 +7,7 @@
           position="left"        
           [sidebarClass]="'demo-sidebar'"
          >
-           <p>Sidebar contents</p>
-           <p>some more sidebar content!!</p>
-  
-           <p>tree view!</p>
+           <p>TAGS</p>
            <ngx-treeview
               [config]="config"
               [items]="tags"
@@ -43,7 +40,7 @@
       <div  *ngIf="isTimed == true">Seconds per question: <input type="text"  [(ngModel)]='secondsPerQuestion'></div>
   </div>
   <div class='row'></div>
-  <button (click)="_toggleSidebar()">Toggle sidebar</button>
+  <button (click)="_toggleSidebar()">Select tags</button>
   <div class='row'></div>
   <div class='row'>
     <button (click)="startClicked($event)">START</button>

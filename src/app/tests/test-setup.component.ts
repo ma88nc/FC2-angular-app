@@ -19,7 +19,7 @@ export class TestSetupComponent implements OnInit {
   //todo: move these to separate config class??
   numberOfQuestions: number;
   isTimed: boolean;
-  secondsPerQuestion: number = 0;
+  secondsPerQuestion: number = 15;
   selectedDomain: number;
 
   //temp
