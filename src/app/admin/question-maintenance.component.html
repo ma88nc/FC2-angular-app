@@ -1,0 +1,108 @@
+<!-- <p>
+  question-maintenance works!
+</p> -->
+<div class="container">
+  <div class="row">
+  <div class="col-xs-4">
+<p>TAGS</p>
+<ngx-treeview
+   [config]="config"
+   [items]="tags"
+   (selectedChange)="onTVSelectedChange($event)">
+</ngx-treeview>
+</div>
+<div class='col-xs-8'>
+  <input type="radio" [(ngModel)]="isUpdate" [value]="false">New question
+  <input type="radio" [(ngModel)]="isUpdate" [value]="true">Update question
+  <div  *ngIf="isUpdate == true"><p>Show grid for existing questions here</p></div>
+
+  <div class="form-group">
+    Question Text
+    <input type="text" class="form-control" id="questionText"
+           required
+           [(ngModel)]="question.questionText" name="questionText">
+  </div>
+  <div class="form-group">
+      Answer
+      <input type="text" class="form-control" id="answer"
+             required
+             [(ngModel)]="question.answer" name="answer">
+    </div>
+
+    <div class="form-group">
+    Select Title
+    <select [(ngModel)]="titleId" (change)="setTitle(titleId)">
+        <option *ngFor="let title of this.titles" [value]="title.titleId">{{title.description}}</option>
+      </select>
+      <button type="button" class="btn btn-info" 
+      (click)="openModal(template)">+</button>
+    </div>
+
+    <div class="form-group">
+      Has Image?
+      <input
+      type="checkbox"
+      [checked]="hasImage"
+      (change)="hasImage = !hasImage"/>
+    </div>
+
+    <div  *ngIf="hasImage == true">
+      <div class="form-group">
+          Image Path
+          <input type="text" class="form-control" id="imagePath"                  
+              [(ngModel)]="question.imagePath" name="imagePath">
+      </div>
+
+      <div class="form-group">
+          Skip Upload?
+          <input
+          type="checkbox"
+          [checked]="skipUpload"
+          (change)="skipUpload = !skipUpload"/>
+    </div>
+    </div>
+
+    <div class="form-group">
+        Is Active?
+        <input
+        type="checkbox"
+        [(ngModel)]="question.isActive"
+        [checked]="isActive" [value]="true"
+        (change)="isActive = !isActive"/>
+    </div>
+
+    <div class="form-group">
+        Reference
+        <input type="text" class="form-control" id="reference"             
+               [(ngModel)]="question.reference" name="reference">
+    </div>
+
+    <div class='row'>
+        <button (click)="saveClicked($event)">SAVE</button>
+    </div>
+
+  {{question.questionText}}<br/>{{question.answer}}<br/>
+  {{question.titleId}}
+
+</div>
+</div>
+</div>  <!-- container -->
+
+<ng-template #template>
+  <div class="modal-header">
+      <h4 class="modal-title pull-left">Add title</h4>
+      <button type="button" class="close pull-right" 
+              aria-label="Close" (click)="modalRef.hide()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  </div>
+  <div class="modal-body">
+    Title&nbsp;
+    <input type="text" class="form-control" id="newTitle"
+    [(ngModel)]="newTitle.description" name="newTitle">
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <button type="button" class="btn btn-primary" (click)="this.saveTitle()">Save changes</button>
+    </div>
+</ng-template>

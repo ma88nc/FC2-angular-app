@@ -1,3 +1,5 @@
+import { Tag } from "../shared/tag";
+
 export class Question {
 /*     Domain: number;
     QuestionID: string;
@@ -8,9 +10,14 @@ export class Question {
     ImagePath: string; */
     domainId: number;
     questionId: string;
+    titleId: number;
     titleDescription: string;
     questionText: string;
     answer: string;
     hasImage: boolean;
     imagePath: string;
+    isActive: boolean;
+    reference: string;
+    dateAdded: Date;
+    questionTags: Tag[];
 }
