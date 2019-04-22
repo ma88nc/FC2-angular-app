@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { TreeviewItem, TreeItem, TreeviewConfig } from 'ngx-treeview';
 import { Question } from '../shared/question';
 import { Title } from '../shared/title';
@@ -8,6 +8,7 @@ import { TagsService } from '../shared/tags.service';
 import { Tag } from '../shared/tag';
 import { QuestionsService } from '../shared/questions.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { AgGridNg2 } from 'ag-grid-angular';
 
 @Component({
   selector: 'app-question-maintenance',
@@ -36,6 +37,17 @@ export class QuestionMaintenanceComponent implements OnInit {
         maxHeight: 400
     });
 
+    // Data for ag-grid
+    private paginationPageSize;
+    @ViewChild('agGrid') agGrid: AgGridNg2;
+    columnDefs = [
+      {headerName: 'Question ID', field: 'questionId', sortable: false, filter: true, checkboxSelection: true},
+      {headerName: 'Title', field: 'titleDescription', sortable: true, filter: true},
+      {headerName: 'Question Text', field: 'questionText', sortable: true, filter: true},
+      {headerName: 'Answer', field: 'answer', sortable: true, filter: true}
+    ];
+    rowData: any[];
+
     public modalRef: BsModalRef;
     
   constructor(private data: DataService, private titlesvc: TitlesService, private tagsvc: TagsService, 
@@ -44,6 +56,9 @@ export class QuestionMaintenanceComponent implements OnInit {
   ngOnInit() {
     this.data.currentDomain.subscribe(domain => this.selectedDomain = domain);  
     console.log("in setup: selected domain is " + this.selectedDomain);
+
+    this.paginationPageSize = 10;
+    this.isUpdate = false;
 
     //temp to call tags
     this.tagsvc.getAll(this.selectedDomain)
@@ -58,6 +73,9 @@ export class QuestionMaintenanceComponent implements OnInit {
 
     this.titlesvc.getTitles(this.selectedDomain)
       .subscribe(titles => this.titles = titles);
+
+    this.questionsvc.getQuestions(this.selectedDomain)
+      .subscribe(questions => this.rowData = questions);  
 
     this.question = new Question();
     this.question.domainId = this.selectedDomain;
@@ -83,11 +101,24 @@ export class QuestionMaintenanceComponent implements OnInit {
     console.log("Selected tags are: " + JSON.stringify(this.question.questionTags));
     console.log("Question object: "+ JSON.stringify(this.question));
     console.log("SAVE clicked!!");
-    this.questionsvc.postQuestion(this.selectedDomain, this.question)
-    .subscribe((data: any) => {
-      this.newQid = data['questionId'];
-      console.log("New question Id is " + this.newQid)
-    })
+
+    if (!this.isUpdate)
+    {
+      this.questionsvc.postQuestion(this.selectedDomain, this.question)
+        .subscribe((data: any) => {
+          this.newQid = data['questionId'];
+          console.log("New question Id is " + this.newQid);
+          this.clearEntries();
+      });
+    }
+    else
+    {
+      this.questionsvc.putQuestion(this.selectedDomain, this.question)
+      .subscribe((data: any) => {
+          // Nothing returned by PUT
+          this.clearEntries();
+    });
+    }
   }
 
   onTVSelectedChange(event) {
@@ -118,6 +149,17 @@ export class QuestionMaintenanceComponent implements OnInit {
     }
     return tags;
     
+  }
+
+  getSelectedRows() {
+    const selectedNodes = this.agGrid.api.getSelectedNodes();
+    const selectedData = selectedNodes.map( node => node.data )
+      .map(node => this.question = node);
+  }
+
+  clearEntries() {
+    this.question = new Question();
+    this.question.domainId = this.selectedDomain;
   }
 
 }

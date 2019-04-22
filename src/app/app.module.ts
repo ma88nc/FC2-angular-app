@@ -11,6 +11,7 @@ import { TestModule } from './tests/test.module';
 import { SharedModule } from './shared/shared.module';
 import { AdminModule } from './admin/admin.module';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { AgGridModule } from 'ag-grid-angular';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
       { path: '', redirectTo: 'welcome', pathMatch: 'full' },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
     ]),
+    AgGridModule.withComponents(null),
     TestModule, 
     SharedModule,
     AdminModule

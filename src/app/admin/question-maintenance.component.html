@@ -14,7 +14,19 @@
 <div class='col-xs-8'>
   <input type="radio" [(ngModel)]="isUpdate" [value]="false">New question
   <input type="radio" [(ngModel)]="isUpdate" [value]="true">Update question
-  <div  *ngIf="isUpdate == true"><p>Show grid for existing questions here</p></div>
+  <div  *ngIf="isUpdate == true">
+  <ag-grid-angular
+    #agGrid 
+    style="width: 800px; height: 300px;" 
+    class="ag-theme-balham"
+    [rowData]="rowData" 
+    [columnDefs]="columnDefs"
+    [pagination]="true"
+    [paginationPageSize]="paginationPageSize"
+  >
+  </ag-grid-angular>
+  <button (click)="getSelectedRows()">Get Selected Row</button>
+  </div>
 
   <div class="form-group">
     Question Text

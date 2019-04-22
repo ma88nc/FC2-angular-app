@@ -25,6 +25,12 @@ export class QuestionsService {
     .catch(this.handleError);
   }
 
+  putQuestion(domainId: number, question: Question) {
+    return this._http.put(this.questionUrl + domainId.toString(), question)
+    .do(data => console.log('Response of PUT question: '+JSON.stringify(data)))
+    .catch(this.handleError);
+  }
+
   private handleError(err: HttpErrorResponse) {
     console.log(err.message);
     return Observable.throw(err.message);

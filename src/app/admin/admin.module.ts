@@ -4,6 +4,7 @@ import { QuestionMaintenanceComponent } from './question-maintenance.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TreeviewModule } from 'ngx-treeview';
+import { AgGridModule } from 'ag-grid-angular';
 
 @NgModule({
   declarations: [QuestionMaintenanceComponent],
@@ -11,6 +12,7 @@ import { TreeviewModule } from 'ngx-treeview';
     CommonModule,
     FormsModule,
     TreeviewModule.forRoot(),
+    AgGridModule.withComponents(null),
     RouterModule.forChild([
       { path: 'admin', component: QuestionMaintenanceComponent }
   ])

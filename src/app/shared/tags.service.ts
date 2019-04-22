@@ -41,7 +41,82 @@ export class TagsService {
     return Observable.throw(err.message);
   }
 
-  private unflatten(arr) : any[] {
+
+  private unflatten(arr: any[]) : any[] {
+    var lookup = {};
+    var rootNodes : any = [];
+    var item : any;
+    console.log("Input to unflatten " + JSON.stringify(arr));
+  
+    for (var i=0, len = arr.length; i < len; i++) {
+  
+      
+      // Add us to lookup
+    //  var ourNode : Node;
+      var ourNode : TreeviewItem;
+      item = arr[i];
+      console.log("   **top of loop for "+ item['tagDescription']);
+      if (lookup.hasOwnProperty(item['TagId']))
+      {
+        ourNode = lookup[item['TagId']];
+      //  ourNode.Source = item;
+        ourNode.text = item['tagDescription'];
+        ourNode.value = item['TagId'];
+        ourNode.checked = false;
+      }
+      else
+      {
+    //    ourNode = new Node();
+    //    chld = new TreeviewItem({ text: child["tagDescription"], value: child["tagId"], checked: false});
+        console.log("Before creating treeviewitem for "+ item['tagDescription']);
+        ourNode = new TreeviewItem({ text: item['tagDescription'], value: item['TagId'], checked: false });
+     //   ourNode.children = [];
+     //   ourNode.Source = item;
+        lookup[item['TagId']] = ourNode;
+      }
+  
+      console.log("Processing item "+ i.toString() + " "+ JSON.stringify(item));
+      // Hook into parent
+      console.log("     parentId="+item['parentTagId']);
+      if (item['parentTagId'] == null) {
+        // Is a root node
+        console.log("Pushing to root: " + JSON.stringify(ourNode));
+        rootNodes.push(ourNode);
+      }
+      else
+      {
+        // is a child row, so we have a parent
+      //  var parentNode: Node;
+        var parentNode: TreeviewItem;
+        if (!lookup.hasOwnProperty(item['parentTagId']))
+        {
+          // Unknown parent, construct preliminary parent
+       //   parentNode = new Node();
+          parentNode = new TreeviewItem({ text: '', value: item['parentTagId'], checked: false });
+          var chlist : TreeviewItem[];
+          chlist = [];
+          console.log("******* adding child " + item['tagDescription'] + " to parent"  )
+          chlist.push(new TreeviewItem({ text: item['tagDescription'], value: item['TagId'], checked: false }))
+          parentNode.children = chlist;
+          lookup[item['parentTagId']] = parentNode;
+        }
+        else
+        {
+          parentNode = lookup[item['parentTagId']];
+        }
+     //   console.log("Pushing child " + item.TagDescription + " to " + parentNode.Source.TagDescription || 'undefined');
+        console.log("Pushing child " + item['tagDescription'] + ' to parentNode ' + JSON.stringify(parentNode));
+      //  parentNode.children.push(ourNode);
+     // console.log('ParentNode children list ' + parentNode.children.length);
+     //   ourNode.Parent = parentNode;
+      }
+    }
+    console.log(JSON.stringify(rootNodes));
+    return rootNodes;
+  }
+
+
+  private unflattenXXX(arr) : any[] {
     var tree = [],
         mappedArr = {},
         arrElem,
