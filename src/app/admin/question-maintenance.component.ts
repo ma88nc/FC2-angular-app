@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ElementRef } from '@angular/core';
 import { TreeviewItem, TreeItem, TreeviewConfig } from 'ngx-treeview';
 import { Question } from '../shared/question';
 import { Title } from '../shared/title';
@@ -9,6 +9,7 @@ import { Tag } from '../shared/tag';
 import { QuestionsService } from '../shared/questions.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { AgGridNg2 } from 'ag-grid-angular';
+import { ImagesService } from '../shared/images.service';
 
 @Component({
   selector: 'app-question-maintenance',
@@ -49,9 +50,21 @@ export class QuestionMaintenanceComponent implements OnInit {
     rowData: any[];
 
     public modalRef: BsModalRef;
+
+    // For image upload
+    acceptedMimeTypes = [
+      'image/gif',
+      'image/jpeg',
+      'image/png'
+    ];
+
+    @ViewChild('fileInput') fileInput: ElementRef;
+    fileDataUri : any;
+    errorMsg = '';
+    fileName:string = '';
     
   constructor(private data: DataService, private titlesvc: TitlesService, private tagsvc: TagsService, 
-    private questionsvc: QuestionsService, private modalService: BsModalService) { }
+    private questionsvc: QuestionsService, private modalService: BsModalService, private imgsvc: ImagesService) { }
 
   ngOnInit() {
     this.data.currentDomain.subscribe(domain => this.selectedDomain = domain);  
@@ -107,9 +120,18 @@ export class QuestionMaintenanceComponent implements OnInit {
       this.questionsvc.postQuestion(this.selectedDomain, this.question)
         .subscribe((data: any) => {
           this.newQid = data['questionId'];
-          console.log("New question Id is " + this.newQid);
-          this.clearEntries();
-      });
+          console.log("New question Id is " + this.newQid);         
+      },
+      err => {
+        console.log("Got an error back from POST question.");
+      },
+      () => {
+        if (this.question.hasImage && !this.skipUpload) {
+          this.uploadFile();
+        }
+        this.clearEntries();
+      }
+    );
     }
     else
     {
@@ -117,7 +139,17 @@ export class QuestionMaintenanceComponent implements OnInit {
       .subscribe((data: any) => {
           // Nothing returned by PUT
           this.clearEntries();
-    });
+    },
+    err => {
+      console.log("Got an error back from PUT question.");
+    },
+    () => {
+      if (!this.skipUpload) {
+        this.uploadFile();
+      }
+      this.clearEntries();
+    }
+  );
     }
   }
 
@@ -160,6 +192,55 @@ export class QuestionMaintenanceComponent implements OnInit {
   clearEntries() {
     this.question = new Question();
     this.question.domainId = this.selectedDomain;
+  }
+
+  // For image upload
+  previewFile() {
+    const file = this.fileInput.nativeElement.files[0];
+    if (file && this.validateFile(file)) {
+
+      const reader = new FileReader();
+      reader.readAsDataURL(this.fileInput.nativeElement.files[0]);
+      reader.onload = () => {
+        this.fileDataUri = reader.result;
+        console.log("Full file name is " + this.fileInput.nativeElement.value);
+       // this.fileName = this.fileInput.nativeElement.value;
+        this.fileName = this.fileInput.nativeElement.value.split('\\').pop().split('/').pop();
+        console.log("Short file name is " + this.fileName);
+      }
+    } else {
+      this.errorMsg = 'File must be jpg, png, or gif and cannot be exceed 500 KB in size'
+    }
+  }
+
+  validateFile(file) {
+    return this.acceptedMimeTypes.includes(file.type) && file.size < 500000;
+  }
+
+  uploadFile() {
+  //  event.preventDefault();
+
+    // get only the base64 file and post it
+    if (this.fileDataUri.length > 0) {
+      const base64File = this.fileDataUri.split(',')[1];
+      // const data = {'image': base64File, 'fullFileName' : `science/`+this.fileName};
+      // console.log(`${environment.apiUrl}/upload-image`)
+     // this.http.post(`${environment.apiUrl}/upload-image`, data)
+     console.log("In uploadFile() saving " + this.question.imagePath);
+      
+      this.imgsvc.addImage(this.question.imagePath, base64File)
+        .subscribe(
+          res => {
+            // handle success
+            // reset file input
+            this.fileInput.nativeElement.value = '';
+          },
+          err => {
+            this.errorMsg = 'Could not upload image.';
+          }
+        );
+    }
+
   }
 
 }
