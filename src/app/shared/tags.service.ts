@@ -56,23 +56,30 @@ export class TagsService {
       var ourNode : TreeviewItem;
       item = arr[i];
       console.log("   **top of loop for "+ item['tagDescription']);
-      if (lookup.hasOwnProperty(item['TagId']))
+      if (lookup.hasOwnProperty(item['tagId']))
       {
-        ourNode = lookup[item['TagId']];
+        ourNode = lookup[item['tagId']];
       //  ourNode.Source = item;
         ourNode.text = item['tagDescription'];
-        ourNode.value = item['TagId'];
+        ourNode.value = item['tagId'];
         ourNode.checked = false;
+      //  lookup[item['tagId']] = ourNode; // ???
       }
       else
       {
     //    ourNode = new Node();
     //    chld = new TreeviewItem({ text: child["tagDescription"], value: child["tagId"], checked: false});
-        console.log("Before creating treeviewitem for "+ item['tagDescription']);
-        ourNode = new TreeviewItem({ text: item['tagDescription'], value: item['TagId'], checked: false });
+        console.log("Before creating treeviewitem for "+ item['tagDescription'] + " and tagid " + item['tagId']);
+        ourNode = new TreeviewItem({ text: item['tagDescription'], value: item['tagId'], checked: false });
+
+        if (item['parentTagId'] == null)
+        {
+          ourNode['rootlevel'] = 1;
+        }
      //   ourNode.children = [];
      //   ourNode.Source = item;
-        lookup[item['TagId']] = ourNode;
+        console.log("PUSHING TO LOOKUP (LN 76): "+item['tagId'] + item['tagDescription']);
+        lookup[item['tagId']] = ourNode;
       }
   
       console.log("Processing item "+ i.toString() + " "+ JSON.stringify(item));
@@ -81,7 +88,8 @@ export class TagsService {
       if (item['parentTagId'] == null) {
         // Is a root node
         console.log("Pushing to root: " + JSON.stringify(ourNode));
-        rootNodes.push(ourNode);
+      //  rootNodes.push(ourNode);
+        console.log("ROOTNODES: " + JSON.stringify(rootNodes));
       }
       else
       {
@@ -92,26 +100,66 @@ export class TagsService {
         {
           // Unknown parent, construct preliminary parent
        //   parentNode = new Node();
+          console.log("Creating preliminary parent with ID "+ item['parentTagId']);
           parentNode = new TreeviewItem({ text: '', value: item['parentTagId'], checked: false });
-          var chlist : TreeviewItem[];
-          chlist = [];
-          console.log("******* adding child " + item['tagDescription'] + " to parent"  )
-          chlist.push(new TreeviewItem({ text: item['tagDescription'], value: item['TagId'], checked: false }))
-          parentNode.children = chlist;
-          lookup[item['parentTagId']] = parentNode;
+     //     parentNode['rootlevel'] = 1;
         }
         else
         {
+          console.log("Found parent with ID "+ item['parentTagId'])
           parentNode = lookup[item['parentTagId']];
         }
      //   console.log("Pushing child " + item.TagDescription + " to " + parentNode.Source.TagDescription || 'undefined');
         console.log("Pushing child " + item['tagDescription'] + ' to parentNode ' + JSON.stringify(parentNode));
+        var chlist : TreeviewItem[];
+        if (parentNode.children != null) {
+          chlist = parentNode.children;
+        }
+        else {
+          chlist = [];
+        }
+        console.log("******* adding child " + item['tagDescription'] + " to parent"  )
+        chlist.push(new TreeviewItem({ text: item['tagDescription'], value: item['tagId'], checked: false }))
+        parentNode.children = chlist;
+     //   parentNode['rootlevel'] = 1;
+        console.log("Children list length = " + parentNode.children.length);
+        // Remove from lookup table.
+        // lookup[item['tagId']] = null;
       //  parentNode.children.push(ourNode);
-     // console.log('ParentNode children list ' + parentNode.children.length);
+     // console.log('Paitem['tagId']rentNode children list ' + parentNode.children.length);
      //   ourNode.Parent = parentNode;
+     if (!lookup.hasOwnProperty(item['parentTagId']))          
+     {
+      console.log("PUSHING PARENT TO LOOKUP (LN 125): "+item['parentTagId']);
+      lookup[item['parentTagId']] = parentNode;
+     }
       }
     }
-    console.log(JSON.stringify(rootNodes));
+    
+    console.log("############LOOKUP TABLE:" + JSON.stringify(lookup));
+    for (var key in lookup) {
+      var tvi : TreeviewItem = lookup[key];
+      if ((tvi != null) && (tvi["rootlevel"] == 1)) {
+        console.log("    Processing " + tvi["text"]);
+        // console.log("    " + tvi.children.length + " children found. Looping...");
+        if (tvi.children != null) {
+        for (var child of tvi.children) {
+          var chld : TreeviewItem = lookup[child['value']];
+          console.log("        looking up child: JSON " + JSON.stringify(child));
+          if (chld != null) {
+            console.log("        Parent " + tvi["text"] + "- child " + chld["text"] + " - JSON: "+ JSON.stringify(chld));
+            if (chld.children != null) 
+            {
+              console.log("        Copying children!!");
+              child.children = chld.children;
+            }
+        }
+        }
+      }
+        rootNodes.push(tvi);
+      }
+    }
+    console.log("Returning from flatten: " + JSON.stringify(rootNodes));
     return rootNodes;
   }
 
