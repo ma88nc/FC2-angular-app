@@ -12,8 +12,8 @@
 </ngx-treeview>
 </div>
 <div class='col-xs-8'>
-  <input type="radio" [(ngModel)]="isUpdate" [value]="false">New question
-  <input type="radio" [(ngModel)]="isUpdate" [value]="true">Update question
+  <input type="radio" [(ngModel)]="isUpdate" [value]="false" (change)="newChanged($event)">New question
+  <input type="radio" [(ngModel)]="isUpdate" [value]="true" (change)="updateChanged($event)">Update question
   <div  *ngIf="isUpdate == true">
   <ag-grid-angular
     #agGrid 
@@ -44,7 +44,7 @@
     <div class="form-group">
     Select Title
     <select [(ngModel)]="titleId" (change)="setTitle(titleId)">
-        <option *ngFor="let title of this.titles" [value]="title.titleId">{{title.description}}</option>
+        <option *ngFor="let title of this.titles" [value]="title.titleId" [selected]="title.titleId===question.titleId">{{title.description}} </option>
       </select>
       <button type="button" class="btn btn-info" 
       (click)="openModal(template)">+</button>
@@ -54,6 +54,7 @@
       Has Image?
       <input
       type="checkbox"
+      [(ngModel)]="question.hasImage"
       [checked]="hasImage"
       (change)="hasImage = !hasImage"/>
     </div>

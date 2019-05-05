@@ -10,8 +10,9 @@ export class TagsService {
 
   constructor(private _http: HttpClient) { }
 
-  tagUrl : string = "http://localhost:57193/api/Tags?DomainId="
+  tagUrl : string = "http://localhost:57193/api/Tags?DomainId=";
   // http://localhost:57193/api/Tags?DomainId=1
+  tagQuestionUrl : string = "http://localhost:57193/api/tags/Questions/";
 
   tags : any[];
 
@@ -33,6 +34,12 @@ export class TagsService {
     //  .map((response) => new TreeNode(response.tagDescription, response.tagId, response.children))
         .map((response) => response = this.tags)
       .do((data) => console.log('Map to tree node fields: ' + JSON.stringify(this.tags)))
+    .catch(this.handleError); 
+  }
+
+  getTagsByQuestion(questionId: string) : Observable<Tag[]> {
+    return this._http.get<Tag[]>(this.tagQuestionUrl+questionId)
+    .do(data => console.log('Incoming Tags for ' + questionId + ' - ' + JSON.stringify(data)))
     .catch(this.handleError); 
   }
 

@@ -26,6 +26,7 @@ export class QuestionMaintenanceComponent implements OnInit {
   hasImage: boolean;
   skipUpload: boolean;
   newTitle: Title;
+  //qtags: number[] = []; // [73,79,88];
 
     // for tree-view 
     items: TreeviewItem[];
@@ -105,7 +106,13 @@ export class QuestionMaintenanceComponent implements OnInit {
     .subscribe((data: any) => {
       this.question.titleId = data['titleId'];
       console.log("New titleId is " + this.question.titleId);  
-    })
+    },
+    err => {},
+    () => {
+      this.titlesvc.getTitles(this.selectedDomain)
+      .subscribe(titles => this.titles = titles);
+    }
+)
   }
 
   saveClicked(event)
@@ -130,6 +137,8 @@ export class QuestionMaintenanceComponent implements OnInit {
           this.uploadFile();
         }
         this.clearEntries();
+        this.questionsvc.getQuestions(this.selectedDomain)
+        .subscribe(questions => this.rowData = questions);  
       }
     );
     }
@@ -148,6 +157,8 @@ export class QuestionMaintenanceComponent implements OnInit {
         this.uploadFile();
       }
       this.clearEntries();
+      this.questionsvc.getQuestions(this.selectedDomain)
+      .subscribe(questions => this.rowData = questions);  
     }
   );
     }
@@ -187,6 +198,26 @@ export class QuestionMaintenanceComponent implements OnInit {
     const selectedNodes = this.agGrid.api.getSelectedNodes();
     const selectedData = selectedNodes.map( node => node.data )
       .map(node => this.question = node);
+
+    // Call service to get tags already set for this question
+    //this.values = [73,79,88];
+    this.tagsvc.getTagsByQuestion(this.question.questionId)
+    .subscribe(
+      res => {
+        // handle success
+        // let result = objArray.map(a => a.foo);
+        console.log("Response from tag/question before mapping is " + JSON.stringify(res)); 
+        this.values = res.map(a => a['tagId']) ;
+        console.log("Tags after mapping are " + JSON.stringify(this.values));       
+      },
+      err => {
+        this.errorMsg = 'Error retrieving tags for question.';
+      },
+      () => { 
+        this.setTreeViewFromList(this.values, this.tags);
+      }
+    );
+    
   }
 
   clearEntries() {
@@ -242,5 +273,39 @@ export class QuestionMaintenanceComponent implements OnInit {
     }
 
   }
+
+  newChanged(evt) {
+    var target = evt.target;
+    if (target.checked) {
+     // this.question = new Question();
+      this.clearEntries();
+      this.setTreeViewFromList([], this.tags);
+    }
+  }
+
+  updateChanged(evt) {
+    var target = evt.target;
+    if (target.checked) {
+
+    }
+  }  
+
+private setTreeViewFromList(qtags: any[], tv: TreeviewItem[])  {
+//  console.log("Calling setTreeViewFromList");
+  for (var i=0; i < tv.length; i++ ) {
+    var tvi : TreeviewItem = tv[i];
+//    console.log("Value is "+ tvi2.value)
+    if (qtags.some(t => t === tvi.value)) {
+      console.log("Setting " + tvi.value);
+        tvi.checked = true;
+        }
+    else {
+      tvi.checked = false;
+    }        
+    if (tvi.children != null) {
+      this.setTreeViewFromList(qtags, tvi.children);
+    }
+  }
+}
 
 }
