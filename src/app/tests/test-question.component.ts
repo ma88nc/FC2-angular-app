@@ -80,6 +80,7 @@ export class TestQuestionComponent implements OnInit {
 
     if (index >= 0 && index < this.pager.count) {
       this.pager.index = index;
+      this.secondsPerQuestion = this.test.testConfig.secondsPerQuestion * this.test.Questions[index].timeMultiplier;
       setTimeout(() => this.counter.restart());
       console.log("In goTo: pager.index=" + this.pager.index);
       console.log("User answer is " + this.theUserAnswer); 

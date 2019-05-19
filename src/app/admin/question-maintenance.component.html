@@ -59,7 +59,7 @@
       (change)="hasImage = !hasImage"/>
     </div>
 
-    <div  *ngIf="hasImage == true">
+    <div  *ngIf="question.hasImage == true">
       <div class="form-group">
           <!-- IMG preview -->
           <div>
@@ -93,6 +93,12 @@
     </div>
 
     <div class="form-group">
+      Time Multiplier
+      <input type="text" class="form-control" class="form-control input-sm" id="timeMultiplier" [value]="2"            
+             [(ngModel)]="question.timeMultiplier" name="timeMultiplier">
+    </div>
+
+    <div class="form-group">
         Reference
         <input type="text" class="form-control" id="reference"             
                [(ngModel)]="question.reference" name="reference">
@@ -103,7 +109,7 @@
     </div>
 
   {{question.questionText}}<br/>{{question.answer}}<br/>
-  {{question.titleId}}<br/>{{question.imagePath}}
+  {{question.titleId}}<br/>{{question.imagePath}}<br/>{{question.timeMultiplier}}
 
   <p *ngIf="errorMsg" style="color:red">{{errorMsg}}</p>
 

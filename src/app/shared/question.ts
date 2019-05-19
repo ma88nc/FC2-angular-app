@@ -19,5 +19,6 @@ export class Question {
     isActive: boolean;
     reference: string;
     dateAdded: Date;
+    timeMultiplier: number;
     questionTags: Tag[];
 }

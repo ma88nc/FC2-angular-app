@@ -147,13 +147,13 @@ export class QuestionMaintenanceComponent implements OnInit {
       this.questionsvc.putQuestion(this.selectedDomain, this.question)
       .subscribe((data: any) => {
           // Nothing returned by PUT
-          this.clearEntries();
+       //   this.clearEntries();
     },
     err => {
       console.log("Got an error back from PUT question.");
     },
     () => {
-      if (!this.skipUpload) {
+      if (this.question.hasImage && !this.skipUpload) {
         this.uploadFile();
       }
       this.clearEntries();
@@ -223,6 +223,7 @@ export class QuestionMaintenanceComponent implements OnInit {
   clearEntries() {
     this.question = new Question();
     this.question.domainId = this.selectedDomain;
+    this.setTreeViewFromList([], this.tags);
   }
 
   // For image upload
@@ -279,7 +280,7 @@ export class QuestionMaintenanceComponent implements OnInit {
     if (target.checked) {
      // this.question = new Question();
       this.clearEntries();
-      this.setTreeViewFromList([], this.tags);
+    //  this.setTreeViewFromList([], this.tags);
     }
   }
 

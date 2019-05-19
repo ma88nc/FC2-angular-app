@@ -17,7 +17,7 @@
   </li>
   <div class="text-sm-center">
       <div *ngIf="this.test.testConfig.IsTimed">
-          <countdown [config]="{leftTime: secondsPerQuestion }" #cd1 (event)="onEvent($event)">$!m!:$!s!</countdown>
+          <countdown [config]="{leftTime: secondsPerQuestion}" #cd1 (event)="onEvent($event)">$!m!:$!s!</countdown>
       </div>
       <button class="btn btn-primary" *ngIf="pager.index < pager.count" (click)="goTo(pager.index + 1);">Submit</button>
       <button class="btn btn-default" (click)="goTo(pager.count - 1);">Quit</button>
