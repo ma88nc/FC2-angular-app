@@ -4,5 +4,6 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiGatewayUrl: 'https://fxec9ahk35.execute-api.us-east-2.amazonaws.com/Prod' 
 };

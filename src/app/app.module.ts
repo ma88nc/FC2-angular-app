@@ -12,6 +12,10 @@ import { SharedModule } from './shared/shared.module';
 import { AdminModule } from './admin/admin.module';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { AgGridModule } from 'ag-grid-angular';
+import { LoginModule } from './login/login.module';
+import { SecurityModule } from './security/security.module';
+import { AuthGuard } from './security/auth.guard';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -24,14 +28,19 @@ import { AgGridModule } from 'ag-grid-angular';
     FormsModule,
     ModalModule.forRoot(),    
     RouterModule.forRoot([
-      { path: 'welcome', component: WelcomeComponent },
+ /*      { path: 'welcome', component: WelcomeComponent },
       { path: '', redirectTo: 'welcome', pathMatch: 'full' },
-      { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
+      { path: '**', redirectTo: 'welcome', pathMatch: 'full' } */
+      { path: '', component: WelcomeComponent, canActivate: [AuthGuard]},
+      { path: 'login', component: LoginComponent},
+      { path: '**', redirectTo: ''}
     ]),
     AgGridModule.withComponents(null),
     TestModule, 
     SharedModule,
-    AdminModule
+    AdminModule,
+    LoginModule,
+    SecurityModule
   ],
   providers: [ DomainService ],
   bootstrap: [AppComponent]
